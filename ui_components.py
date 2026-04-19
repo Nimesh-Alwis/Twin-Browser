@@ -9,7 +9,10 @@ class NavigationBar(QWidget): # අපි දැන් මේවා එකට �
         self.back_btn = QPushButton("<")
         self.forward_btn = QPushButton(">")
         self.reload_btn = QPushButton("R")
+        self.scan_btn = QPushButton("Scan Site")
         self.address_bar = QLineEdit()
+        self.address_bar.setPlaceholderText("Enter URL here...")
+
 
         # බොත්තම් වලට වැඩ පැවරීම (Signals & Slots)
         self.back_btn.clicked.connect(self.engine.back)
@@ -23,6 +26,7 @@ class NavigationBar(QWidget): # අපි දැන් මේවා එකට �
         layout.addWidget(self.forward_btn)
         layout.addWidget(self.reload_btn)
         layout.addWidget(self.address_bar)
+        layout.addWidget(self.scan_btn)
         
         self.setLayout(layout)
 
