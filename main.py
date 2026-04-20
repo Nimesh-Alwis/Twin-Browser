@@ -4,7 +4,7 @@ from browser_engine import TwinEngine
 from ui_components import NavigationBar
 from security_manager import SecurityManager
 from site_scanner import SiteScanner
-
+from snake_game import SnakeGame
 
 class TwinBrowser(QMainWindow):
     def __init__(self):
@@ -17,7 +17,7 @@ class TwinBrowser(QMainWindow):
         self.nav_bar = NavigationBar(self.engine)
         
         self.nav_bar.scan_btn.clicked.connect(self.run_site_scan)
-
+        self.nav_bar.game_btn.clicked.connect(self.start_snake_game) # Game බොත්තම සම්බන්ධ කිරීම
         # පරණ Connection එක අයින් කර අලුත් එක (secure_navigate) සම්බන්ධ කිරීම
         try:
             self.nav_bar.address_bar.returnPressed.disconnect()
@@ -35,8 +35,15 @@ class TwinBrowser(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
 
-        self.setWindowTitle("Twin-Browser Secure v1.4")
+        self.setWindowTitle("Twin-Browser Secure v1.5")
         self.resize(1000, 700)
+
+
+    # 3. Snake Game එක පණගන්වන Function එක
+    def start_snake_game(self):
+        # Game එක අලුත් Window එකක් ලෙස විවෘත කිරීම
+        self.game_window = SnakeGame()
+        self.game_window.show()
 
     # 4. ස්කෑන් එක සිදු කරන අලුත් Function එක
     def run_site_scan(self):
