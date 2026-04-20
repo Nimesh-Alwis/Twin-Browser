@@ -8,7 +8,67 @@ from snake_game import SnakeGame
 from text_editor import PayloadNotebook
 from bookmark_manager import BookmarkManager
 
+CYBERPUNK_STYLE = """
+QMainWindow {
+    background-color: #0f1117; /* Softer dark */
+}
 
+QWidget {
+    background-color: #0f1117;
+    color: #c9d1d9; /* Soft light gray instead of harsh green */
+    font-family: 'Segoe UI', 'Courier New', monospace;
+    font-size: 14px;
+}
+
+/* Input Fields */
+QLineEdit {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 6px;
+    color: #58a6ff; /* Soft blue */
+}
+
+QLineEdit:focus {
+    border: 1px solid #58a6ff;
+    background-color: #1c2128;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    padding: 8px 15px;
+    color: #58a6ff;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #21262d;
+    border: 1px solid #58a6ff;
+    color: #ffffff;
+}
+
+QPushButton:pressed {
+    background-color: #58a6ff;
+    color: #0f1117;
+}
+
+/* Lists & Text Areas */
+QListWidget, QTextEdit {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+}
+
+/* Labels */
+QLabel {
+    color: #8b949e; /* softer than pink */
+    font-weight: 500;
+}
+"""
 
 class TwinBrowser(QMainWindow):
     def __init__(self):
@@ -27,7 +87,8 @@ class TwinBrowser(QMainWindow):
         self.nav_bar.notes_btn.clicked.connect(self.open_editor)
         self.nav_bar.bookmark_btn.clicked.connect(self.add_bookmark)
         self.nav_bar.view_bookmarks_btn.clicked.connect(self.show_bookmarks)
-
+        # ... (අනිත් කේතයන්) ...
+        self.setStyleSheet(CYBERPUNK_STYLE)
 
         try:
             self.nav_bar.address_bar.returnPressed.disconnect()
@@ -99,6 +160,7 @@ class TwinBrowser(QMainWindow):
             self.engine.load_new_url(url)
         else:
             QMessageBox.warning(self, "Security Risk", f"Access Blocked: {reason}")
+
 
 # මෙතැන් සිට පේළි Class එකෙන් පිටත (වම් පැත්තටම හේත්තු වී) තිබිය යුතුයි
 if __name__ == "__main__":
