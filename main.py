@@ -5,6 +5,9 @@ from ui_components import NavigationBar
 from security_manager import SecurityManager
 from site_scanner import SiteScanner
 from snake_game import SnakeGame
+from text_editor import SimpleEditor
+
+
 
 class TwinBrowser(QMainWindow):
     def __init__(self):
@@ -18,7 +21,11 @@ class TwinBrowser(QMainWindow):
         
         self.nav_bar.scan_btn.clicked.connect(self.run_site_scan)
         self.nav_bar.game_btn.clicked.connect(self.start_snake_game) # Game බොත්තම සම්බන්ධ කිරීම
+        
         # පරණ Connection එක අයින් කර අලුත් එක (secure_navigate) සම්බන්ධ කිරීම
+        self.nav_bar.notes_btn.clicked.connect(self.open_editor)
+        self.nav_bar.bookmark_btn.clicked.connect(self.add_bookmark)
+        
         try:
             self.nav_bar.address_bar.returnPressed.disconnect()
         except:
@@ -38,6 +45,18 @@ class TwinBrowser(QMainWindow):
         self.setWindowTitle("Twin-Browser Secure v1.5")
         self.resize(1000, 700)
 
+
+    def open_editor(self):
+        self.editor = SimpleEditor()
+        self.editor.show()
+
+
+    def add_bookmark(self):
+        url = self.nav_bar.address_bar.text()
+        if url:
+            with open("bookmarks.txt", "a") as f:
+                f.write(url + "\n")
+            QMessageBox.information(self, "Success", "Page Bookmarked!")
 
     # 3. Snake Game එක පණගන්වන Function එක
     def start_snake_game(self):
