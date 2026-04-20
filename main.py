@@ -5,7 +5,7 @@ from ui_components import NavigationBar
 from security_manager import SecurityManager
 from site_scanner import SiteScanner
 from snake_game import SnakeGame
-from text_editor import SimpleEditor
+from text_editor import PayloadNotebook
 from bookmark_manager import BookmarkManager
 
 
@@ -50,7 +50,7 @@ class TwinBrowser(QMainWindow):
 
 
     def open_editor(self):
-        self.editor = SimpleEditor()
+        self.editor = PayloadNotebook()
         self.editor.show()
 
     def show_bookmarks(self):
