@@ -13,7 +13,9 @@ class NavigationBar(QWidget):
         self.game_btn = QPushButton("🎮 Game")
         self.bookmark_btn = QPushButton("⭐ Bookmark")
         self.notes_btn = QPushButton("📝 Notes")
-        
+        self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
+
+
         self.address_bar = QLineEdit()
         self.address_bar.setPlaceholderText("Enter URL here...")
 
@@ -35,6 +37,7 @@ class NavigationBar(QWidget):
         layout.addWidget(self.game_btn) 
         layout.addWidget(self.bookmark_btn)
         layout.addWidget(self.notes_btn)
+        layout.addWidget(self.view_bookmarks_btn)
         
         self.setLayout(layout)
 

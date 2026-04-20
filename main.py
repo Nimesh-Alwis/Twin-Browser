@@ -6,6 +6,7 @@ from security_manager import SecurityManager
 from site_scanner import SiteScanner
 from snake_game import SnakeGame
 from text_editor import SimpleEditor
+from bookmark_manager import BookmarkManager
 
 
 
@@ -25,7 +26,9 @@ class TwinBrowser(QMainWindow):
         # පරණ Connection එක අයින් කර අලුත් එක (secure_navigate) සම්බන්ධ කිරීම
         self.nav_bar.notes_btn.clicked.connect(self.open_editor)
         self.nav_bar.bookmark_btn.clicked.connect(self.add_bookmark)
-        
+        self.nav_bar.view_bookmarks_btn.clicked.connect(self.show_bookmarks)
+
+
         try:
             self.nav_bar.address_bar.returnPressed.disconnect()
         except:
@@ -50,6 +53,10 @@ class TwinBrowser(QMainWindow):
         self.editor = SimpleEditor()
         self.editor.show()
 
+    def show_bookmarks(self):
+        # Bookmark Manager එක විවෘත කිරීම
+        self.bookmark_view = BookmarkManager(self)
+        self.bookmark_view.show()
 
     def add_bookmark(self):
         url = self.nav_bar.address_bar.text()
