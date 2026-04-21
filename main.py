@@ -7,6 +7,7 @@ from site_scanner import SiteScanner
 from snake_game import SnakeGame
 from text_editor import PayloadNotebook
 from bookmark_manager import BookmarkManager
+from traffic_monitor import TrafficMonitor
 
 CYBERPUNK_STYLE = """
 QMainWindow {
@@ -87,6 +88,9 @@ class TwinBrowser(QMainWindow):
         self.nav_bar.notes_btn.clicked.connect(self.open_editor)
         self.nav_bar.bookmark_btn.clicked.connect(self.add_bookmark)
         self.nav_bar.view_bookmarks_btn.clicked.connect(self.show_bookmarks)
+        self.engine.traffic_signal.connect(self.log_traffic) 
+        self.monitor = TrafficMonitor() # මේ පේළිය අනිවාර්යයෙන්ම ඕනේ
+        self.nav_bar.traffic_btn.clicked.connect(self.monitor.show)
         # ... (අනිත් කේතයන්) ...
         self.setStyleSheet(CYBERPUNK_STYLE)
 
@@ -109,6 +113,10 @@ class TwinBrowser(QMainWindow):
         self.setWindowTitle("Twin-Browser Secure v1.5")
         self.resize(1000, 700)
 
+
+
+    def log_traffic(self, method, status, url):
+        self.monitor.add_log(method, status, url)
 
     def open_editor(self):
         self.editor = PayloadNotebook()

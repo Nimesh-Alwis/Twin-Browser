@@ -15,6 +15,8 @@ class NavigationBar(QWidget):
         self.notes_btn = QPushButton("📝 Notes")
         self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
 
+        # අලුතින් එකතු කළ Traffic Monitor බොත්තම
+        self.traffic_btn = QPushButton("🌐 Traffic")
 
         self.address_bar = QLineEdit()
         self.address_bar.setPlaceholderText("Enter URL here...")
@@ -34,6 +36,7 @@ class NavigationBar(QWidget):
         layout.addWidget(self.reload_btn)
         layout.addWidget(self.address_bar)
         layout.addWidget(self.scan_btn)
+        layout.addWidget(self.traffic_btn) # Traffic බොත්තම මෙතැනට දැම්මා
         layout.addWidget(self.game_btn) 
         layout.addWidget(self.bookmark_btn)
         layout.addWidget(self.notes_btn)
