@@ -91,6 +91,7 @@ class TwinBrowser(QMainWindow):
         self.engine.traffic_signal.connect(self.log_traffic) 
         self.monitor = TrafficMonitor() # මේ පේළිය අනිවාර්යයෙන්ම ඕනේ
         self.nav_bar.traffic_btn.clicked.connect(self.monitor.show)
+        self.nav_bar.home_btn.clicked.connect(self.go_home)
         # ... (අනිත් කේතයන්) ...
         self.setStyleSheet(CYBERPUNK_STYLE)
 
@@ -114,6 +115,11 @@ class TwinBrowser(QMainWindow):
         self.resize(1000, 700)
 
 
+
+    def go_home(self):
+        home_url = "https://www.google.com" # ඔයා කැමති Home පිටුව මෙතැනට දෙන්න
+        self.nav_bar.address_bar.setText(home_url)
+        self.engine.load_new_url(home_url)
 
     def log_traffic(self, method, status, url):
         self.monitor.add_log(method, status, url)
