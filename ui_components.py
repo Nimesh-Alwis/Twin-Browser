@@ -15,7 +15,8 @@ class NavigationBar(QWidget):
         self.notes_btn = QPushButton("📝 Notes")
         self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
         self.home_btn = QPushButton("🏠 Home") # Home බොත්තම සාදන්න
-
+        self.quality_selector = QComboBox()
+        self.quality_selector.addItems(["Best", "1080p", "720p", "480p", "360p"])
         # අලුතින් එකතු කළ Traffic Monitor බොත්තම
         self.traffic_btn = QPushButton("🌐 Traffic")
 
@@ -39,6 +40,10 @@ class NavigationBar(QWidget):
         self.address_bar.returnPressed.connect(self.navigate)
         self.ua_combo.currentTextChanged.connect(self.change_user_agent)
         self.download_btn = QPushButton("📥 Download Video")
+        
+        # Address Bar එක Update කිරීම සඳහා
+        self.engine.urlChanged.connect(self.update_address_bar)
+
         # සටහන: scan_btn සහ game_btn සම්බන්ධ කරන්නේ main.py එකෙනි.
         
         # 3. Layout එක සැකසීම (බොත්තම් පේළියට තැබීම)
@@ -55,9 +60,10 @@ class NavigationBar(QWidget):
         layout.addWidget(self.bookmark_btn)
         layout.addWidget(self.notes_btn)
         layout.addWidget(self.view_bookmarks_btn)
+        layout.addWidget(self.quality_selector)
         layout.addWidget(self.download_btn)
 
-        
+
         self.setLayout(layout)
 
     def navigate(self):
@@ -65,6 +71,10 @@ class NavigationBar(QWidget):
         # හිස් URL එකක් නම් navigate නොකර සිටීම හොඳ පුරුද්දකි
         if url.strip():
             self.engine.load_new_url(url)
+
+    def update_address_bar(self, qurl):
+        # අලුත් URL එක Address Bar එකේ පෙන්වීම
+        self.address_bar.setText(qurl.toString())
 
     def change_user_agent(self, text):
         user_agents = {
