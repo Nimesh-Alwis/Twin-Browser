@@ -38,7 +38,7 @@ class NavigationBar(QWidget):
         self.reload_btn.clicked.connect(self.engine.reload)
         self.address_bar.returnPressed.connect(self.navigate)
         self.ua_combo.currentTextChanged.connect(self.change_user_agent)
-        
+        self.download_btn = QPushButton("📥 Download Video")
         # සටහන: scan_btn සහ game_btn සම්බන්ධ කරන්නේ main.py එකෙනි.
         
         # 3. Layout එක සැකසීම (බොත්තම් පේළියට තැබීම)
@@ -55,6 +55,8 @@ class NavigationBar(QWidget):
         layout.addWidget(self.bookmark_btn)
         layout.addWidget(self.notes_btn)
         layout.addWidget(self.view_bookmarks_btn)
+        layout.addWidget(self.download_btn)
+
         
         self.setLayout(layout)
 

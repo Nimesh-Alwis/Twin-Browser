@@ -8,6 +8,8 @@ from snake_game import SnakeGame
 from text_editor import PayloadNotebook
 from bookmark_manager import BookmarkManager
 from traffic_monitor import TrafficMonitor
+from video_downloader import DownloadThread
+
 
 CYBERPUNK_STYLE = """
 QMainWindow {
@@ -92,6 +94,7 @@ class TwinBrowser(QMainWindow):
         self.monitor = TrafficMonitor() # මේ පේළිය අනිවාර්යයෙන්ම ඕනේ
         self.nav_bar.traffic_btn.clicked.connect(self.monitor.show)
         self.nav_bar.home_btn.clicked.connect(self.go_home)
+        self.nav_bar.download_btn.clicked.connect(self.start_video_download)
         # ... (අනිත් කේතයන්) ...
         self.setStyleSheet(CYBERPUNK_STYLE)
 
@@ -114,7 +117,18 @@ class TwinBrowser(QMainWindow):
         self.setWindowTitle("Twin-Browser Secure v1.5")
         self.resize(1000, 700)
 
+    def start_video_download(self):
+        url = self.nav_bar.address_bar.text()
+        if url:
+        # User ට දැනුම් දීමක් කරන්න
+            QMessageBox.information(self, "Download Started", "The video download has started in the background.")
+        
+        self.download_worker = DownloadThread(url)
+        self.download_worker.finished_signal.connect(self.on_download_finished)
+        self.download_worker.start()
 
+    def on_download_finished(self, message):
+        QMessageBox.information(self, "Download Update", message)
 
     def go_home(self):
         home_url = "https://www.google.com" # ඔයා කැමති Home පිටුව මෙතැනට දෙන්න
