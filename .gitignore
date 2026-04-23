@@ -1,0 +1,6 @@
+__pycache__/
+.vscode/
+profile_data/
+history_log.txt
+bookmarks.txt
+special_notes.txt

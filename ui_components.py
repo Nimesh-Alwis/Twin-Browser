@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QLineEdit, QPushButton, QHBoxLayout, QWidget
+from PyQt6.QtWidgets import QLineEdit, QPushButton, QHBoxLayout, QWidget, QComboBox
 
 class NavigationBar(QWidget):
     def __init__(self, browser_engine):
@@ -18,6 +18,16 @@ class NavigationBar(QWidget):
         # අලුතින් එකතු කළ Traffic Monitor බොත්තම
         self.traffic_btn = QPushButton("🌐 Traffic")
 
+        # User-Agent Switcher (අනන්‍යතාවය සැඟවීම)
+        self.ua_combo = QComboBox()
+        self.ua_combo.addItems([
+            "Default (Twin-Browser)",
+            "Google Chrome (Windows)",
+            "Googlebot",
+            "iPhone Safari",
+            "cURL"
+        ])
+
         self.address_bar = QLineEdit()
         self.address_bar.setPlaceholderText("Enter URL here...")
 
@@ -26,14 +36,16 @@ class NavigationBar(QWidget):
         self.forward_btn.clicked.connect(self.engine.forward)
         self.reload_btn.clicked.connect(self.engine.reload)
         self.address_bar.returnPressed.connect(self.navigate)
+        self.ua_combo.currentTextChanged.connect(self.change_user_agent)
         
         # සටහන: scan_btn සහ game_btn සම්බන්ධ කරන්නේ main.py එකෙනි.
-
+        
         # 3. Layout එක සැකසීම (බොත්තම් පේළියට තැබීම)
         layout = QHBoxLayout()
         layout.addWidget(self.back_btn)
         layout.addWidget(self.forward_btn)
         layout.addWidget(self.reload_btn)
+        layout.addWidget(self.ua_combo)
         layout.addWidget(self.address_bar)
         layout.addWidget(self.scan_btn)
         layout.addWidget(self.traffic_btn) # Traffic බොත්තම මෙතැනට දැම්මා
@@ -49,3 +61,14 @@ class NavigationBar(QWidget):
         # හිස් URL එකක් නම් navigate නොකර සිටීම හොඳ පුරුද්දකි
         if url.strip():
             self.engine.load_new_url(url)
+
+    def change_user_agent(self, text):
+        user_agents = {
+            "Default (Twin-Browser)": "",
+            "Google Chrome (Windows)": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Googlebot": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+            "iPhone Safari": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1",
+            "cURL": "curl/7.68.0"
+        }
+        selected_ua = user_agents.get(text, "")
+        self.engine.set_custom_user_agent(selected_ua)

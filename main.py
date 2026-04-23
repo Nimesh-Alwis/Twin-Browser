@@ -56,8 +56,8 @@ QPushButton:pressed {
     color: #0f1117;
 }
 
-/* Lists & Text Areas */
-QListWidget, QTextEdit {
+/* Lists, Text Areas & Combo Box */
+QListWidget, QTextEdit, QComboBox {
     background-color: #161b22;
     border: 1px solid #30363d;
     border-radius: 6px;
