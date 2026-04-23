@@ -1,5 +1,5 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox, QProgressBar
 from browser_engine import TwinEngine
 from ui_components import NavigationBar
 from security_manager import SecurityManager
@@ -95,6 +95,8 @@ class TwinBrowser(QMainWindow):
         self.nav_bar.traffic_btn.clicked.connect(self.monitor.show)
         self.nav_bar.home_btn.clicked.connect(self.go_home)
         self.nav_bar.download_btn.clicked.connect(self.start_video_download)
+        self.p_bar = QProgressBar()
+        self.p_bar.setVisible(False) # සාමාන්‍ය වෙලාවට පේන්නෙ නැහැ
         # ... (අනිත් කේතයන්) ...
         self.setStyleSheet(CYBERPUNK_STYLE)
 
@@ -120,16 +122,19 @@ class TwinBrowser(QMainWindow):
     def start_video_download(self):
         url = self.nav_bar.address_bar.text()
         if url:
-        # User ට දැනුම් දීමක් කරන්න
-            QMessageBox.information(self, "Download Started", "The video download has started in the background.")
-        
-        self.download_worker = DownloadThread(url)
-        self.download_worker.finished_signal.connect(self.on_download_finished)
-        self.download_worker.start()
+            self.p_bar.setVisible(True)
+            self.p_bar.setValue(0)
+            
+            self.download_worker = DownloadThread(url)
+            # Progress signal එක සම්බන්ධ කිරීම
+            self.download_worker.progress_signal.connect(self.p_bar.setValue)
+            self.download_worker.finished_signal.connect(self.on_download_finished)
+            self.download_worker.start()
 
     def on_download_finished(self, message):
+        self.p_bar.setVisible(False)
         QMessageBox.information(self, "Download Update", message)
-
+        
     def go_home(self):
         home_url = "https://www.google.com" # ඔයා කැමති Home පිටුව මෙතැනට දෙන්න
         self.nav_bar.address_bar.setText(home_url)
