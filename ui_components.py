@@ -25,6 +25,7 @@ class NavigationBar(QWidget):
 
         # 2. Bottom Tier: Security & Productivity Tools
         self.scan_btn = QPushButton("🔍 Scan Site")
+        self.subdomain_btn = QPushButton("🕵️ Subdomains")
         self.traffic_btn = QPushButton("🌐 Traffic Monitor")
         self.notes_btn = QPushButton("📝 Payload Notes")
         self.bookmark_btn = QPushButton("⭐ Bookmark")
@@ -58,6 +59,7 @@ class NavigationBar(QWidget):
         tools_layout.setContentsMargins(0, 4, 0, 0)
         tools_layout.setSpacing(8)
         tools_layout.addWidget(self.scan_btn)
+        tools_layout.addWidget(self.subdomain_btn)
         tools_layout.addWidget(self.traffic_btn)
         tools_layout.addWidget(self.notes_btn)
         tools_layout.addWidget(self.bookmark_btn)

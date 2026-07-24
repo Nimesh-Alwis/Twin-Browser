@@ -9,6 +9,7 @@ from text_editor import PayloadNotebook
 from bookmark_manager import BookmarkManager
 from traffic_monitor import TrafficMonitor
 from video_downloader import DownloadThread
+from subdomain_finder import SubdomainDialog
 
 
 VIVALDI_PURPLE_STYLE = """
@@ -143,6 +144,7 @@ class TwinBrowser(QMainWindow):
         self.nav_bar = NavigationBar(self.engine)
         
         self.nav_bar.scan_btn.clicked.connect(self.run_site_scan)
+        self.nav_bar.subdomain_btn.clicked.connect(self.run_subdomain_finder)
         self.nav_bar.game_btn.clicked.connect(self.start_snake_game)
         self.nav_bar.notes_btn.clicked.connect(self.open_editor)
         self.nav_bar.bookmark_btn.clicked.connect(self.add_bookmark)
@@ -237,6 +239,14 @@ class TwinBrowser(QMainWindow):
             QMessageBox.information(self, "Site Scan Results", scan_report)
         else:
             QMessageBox.warning(self, "Input Error", "Please enter a valid target URL first!")
+
+    def run_subdomain_finder(self):
+        current_url = self.nav_bar.address_bar.text().strip()
+        if current_url and current_url != "twin://startpage":
+            self.subdomain_view = SubdomainDialog(current_url)
+            self.subdomain_view.show()
+        else:
+            QMessageBox.warning(self, "Input Error", "Please enter or navigate to a target website first!")
 
     def secure_navigate(self):
         url = self.nav_bar.address_bar.text().strip()
