@@ -180,7 +180,6 @@ class TwinBrowser(QMainWindow):
         self.tab_widget.setTabsClosable(True)
         self.tab_widget.setMovable(True)
         self.tab_widget.tabCloseRequested.connect(self.close_tab)
-        self.tab_widget.currentChanged.connect(self.on_tab_changed)
 
         # Add New Tab Button (+)
         self.add_tab_btn = QPushButton("➕")
@@ -194,6 +193,9 @@ class TwinBrowser(QMainWindow):
 
         # Navigation bar
         self.nav_bar = NavigationBar(self.current_engine())
+        
+        # Connect tab change signal after nav_bar is created
+        self.tab_widget.currentChanged.connect(self.on_tab_changed)
         
         self.nav_bar.scan_btn.clicked.connect(self.run_site_scan)
         self.nav_bar.subdomain_btn.clicked.connect(self.run_subdomain_finder)
@@ -274,7 +276,7 @@ class TwinBrowser(QMainWindow):
 
     def on_tab_changed(self, index):
         engine = self.current_engine()
-        if engine:
+        if engine and hasattr(self, 'nav_bar'):
             self.nav_bar.set_engine(engine)
 
     def start_video_download(self):
