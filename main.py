@@ -1,8 +1,8 @@
 import sys
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, 
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, 
                              QMessageBox, QProgressBar, QLabel, QTabWidget, QPushButton)
 from browser_engine import TwinEngine
-from ui_components import NavigationBar
+from ui_components import NavigationBar, ToolsSidebar
 from security_manager import SecurityManager
 from site_scanner import SiteScanner
 from snake_game import SnakeGame
@@ -175,6 +175,9 @@ class TwinBrowser(QMainWindow):
         self.scanner = SiteScanner()
         self.monitor = TrafficMonitor()
 
+        # Left Collapsible Sidebar
+        self.sidebar = ToolsSidebar()
+
         # Multi-Tab Widget
         self.tab_widget = QTabWidget()
         self.tab_widget.setTabsClosable(True)
@@ -191,21 +194,25 @@ class TwinBrowser(QMainWindow):
         # Create initial tab
         self.add_new_tab()
 
-        # Navigation bar
+        # Single Clean Navigation Bar
         self.nav_bar = NavigationBar(self.current_engine())
         
         # Connect tab change signal after nav_bar is created
         self.tab_widget.currentChanged.connect(self.on_tab_changed)
-        
-        self.nav_bar.scan_btn.clicked.connect(self.run_site_scan)
-        self.nav_bar.subdomain_btn.clicked.connect(self.run_subdomain_finder)
-        self.nav_bar.game_btn.clicked.connect(self.start_snake_game)
-        self.nav_bar.notes_btn.clicked.connect(self.open_editor)
-        self.nav_bar.bookmark_btn.clicked.connect(self.add_bookmark)
-        self.nav_bar.view_bookmarks_btn.clicked.connect(self.show_bookmarks)
-        self.nav_bar.traffic_btn.clicked.connect(self.monitor.show)
+
+        # Connect Sidebar Toggle Button
+        self.nav_bar.sidebar_toggle_btn.clicked.connect(self.sidebar.toggle_sidebar)
         self.nav_bar.home_btn.clicked.connect(self.go_home)
-        self.nav_bar.download_btn.clicked.connect(self.start_video_download)
+
+        # Connect Sidebar Tools Action Buttons
+        self.sidebar.scan_btn.clicked.connect(self.run_site_scan)
+        self.sidebar.subdomain_btn.clicked.connect(self.run_subdomain_finder)
+        self.sidebar.traffic_btn.clicked.connect(self.monitor.show)
+        self.sidebar.notes_btn.clicked.connect(self.open_editor)
+        self.sidebar.bookmark_btn.clicked.connect(self.add_bookmark)
+        self.sidebar.view_bookmarks_btn.clicked.connect(self.show_bookmarks)
+        self.sidebar.download_btn.clicked.connect(self.start_video_download)
+        self.sidebar.game_btn.clicked.connect(self.start_snake_game)
         
         self.p_bar = QProgressBar()
         self.speed_label = QLabel("Speed: 0 MB/s")
@@ -221,11 +228,18 @@ class TwinBrowser(QMainWindow):
             
         self.nav_bar.address_bar.returnPressed.connect(self.secure_navigate)
 
+        # Middle Split Area (Left Sidebar + Right Tab Widget)
+        middle_layout = QHBoxLayout()
+        middle_layout.setContentsMargins(0, 0, 0, 0)
+        middle_layout.setSpacing(0)
+        middle_layout.addWidget(self.sidebar)
+        middle_layout.addWidget(self.tab_widget, stretch=1)
+
         layout = QVBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         layout.addWidget(self.nav_bar)
-        layout.addWidget(self.tab_widget, stretch=1)
+        layout.addLayout(middle_layout, stretch=1)
         layout.addWidget(self.speed_label)
         layout.addWidget(self.p_bar)
 
@@ -234,7 +248,7 @@ class TwinBrowser(QMainWindow):
         self.setCentralWidget(container)
 
         self.setWindowTitle("Twin-Browser Futuristic Edition v2.0")
-        self.resize(1100, 750)
+        self.resize(1150, 780)
 
     def current_engine(self):
         return self.tab_widget.currentWidget()
@@ -282,7 +296,7 @@ class TwinBrowser(QMainWindow):
     def start_video_download(self):
         engine = self.current_engine()
         url = self.nav_bar.address_bar.text() if engine else ""
-        quality = self.nav_bar.quality_selector.currentText()
+        quality = self.sidebar.quality_selector.currentText()
 
         if url:
             self.p_bar.setVisible(True)

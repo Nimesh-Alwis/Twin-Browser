@@ -1,11 +1,16 @@
-from PyQt6.QtWidgets import QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, QComboBox
+from PyQt6.QtWidgets import (QLineEdit, QPushButton, QHBoxLayout, QVBoxLayout, 
+                             QWidget, QComboBox, QLabel, QScrollArea)
 
 class NavigationBar(QWidget):
     def __init__(self, browser_engine):
         super().__init__()
         self.engine = browser_engine
 
-        # 1. Top Tier: Main Navigation & Address Bar
+        # Sidebar Toggle Button
+        self.sidebar_toggle_btn = QPushButton("🛠️ Tools")
+        self.sidebar_toggle_btn.setToolTip("Toggle Tools Panel")
+
+        # Navigation Controls
         self.back_btn = QPushButton("◀")
         self.forward_btn = QPushButton("▶")
         self.reload_btn = QPushButton("↻")
@@ -23,19 +28,6 @@ class NavigationBar(QWidget):
             "cURL"
         ])
 
-        # 2. Bottom Tier: Security & Productivity Tools
-        self.scan_btn = QPushButton("🔍 Scan Site")
-        self.subdomain_btn = QPushButton("🕵️ Subdomains")
-        self.traffic_btn = QPushButton("🌐 Traffic Monitor")
-        self.notes_btn = QPushButton("📝 Payload Notes")
-        self.bookmark_btn = QPushButton("⭐ Bookmark")
-        self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
-        
-        self.quality_selector = QComboBox()
-        self.quality_selector.addItems(["Best", "1080p", "720p", "480p", "360p"])
-        self.download_btn = QPushButton("📥 Download Video")
-        self.game_btn = QPushButton("🎮 Mini Game")
-
         # Connect Navigation Signals
         self.back_btn.clicked.connect(self.engine.back)
         self.forward_btn.clicked.connect(self.engine.forward)
@@ -44,38 +36,19 @@ class NavigationBar(QWidget):
         self.ua_combo.currentTextChanged.connect(self.change_user_agent)
         self.engine.urlChanged.connect(self.update_address_bar)
 
-        # 3. Create 2-Tier Layout
-        top_layout = QHBoxLayout()
-        top_layout.setContentsMargins(0, 0, 0, 0)
-        top_layout.setSpacing(8)
-        top_layout.addWidget(self.back_btn)
-        top_layout.addWidget(self.forward_btn)
-        top_layout.addWidget(self.reload_btn)
-        top_layout.addWidget(self.home_btn)
-        top_layout.addWidget(self.address_bar, stretch=1)
-        top_layout.addWidget(self.ua_combo)
+        # Single Clean Header Layout
+        layout = QHBoxLayout()
+        layout.setContentsMargins(10, 8, 10, 8)
+        layout.setSpacing(8)
+        layout.addWidget(self.sidebar_toggle_btn)
+        layout.addWidget(self.back_btn)
+        layout.addWidget(self.forward_btn)
+        layout.addWidget(self.reload_btn)
+        layout.addWidget(self.home_btn)
+        layout.addWidget(self.address_bar, stretch=1)
+        layout.addWidget(self.ua_combo)
 
-        tools_layout = QHBoxLayout()
-        tools_layout.setContentsMargins(0, 4, 0, 0)
-        tools_layout.setSpacing(8)
-        tools_layout.addWidget(self.scan_btn)
-        tools_layout.addWidget(self.subdomain_btn)
-        tools_layout.addWidget(self.traffic_btn)
-        tools_layout.addWidget(self.notes_btn)
-        tools_layout.addWidget(self.bookmark_btn)
-        tools_layout.addWidget(self.view_bookmarks_btn)
-        tools_layout.addStretch()
-        tools_layout.addWidget(self.quality_selector)
-        tools_layout.addWidget(self.download_btn)
-        tools_layout.addWidget(self.game_btn)
-
-        main_layout = QVBoxLayout()
-        main_layout.setContentsMargins(10, 8, 10, 8)
-        main_layout.setSpacing(6)
-        main_layout.addLayout(top_layout)
-        main_layout.addLayout(tools_layout)
-
-        self.setLayout(main_layout)
+        self.setLayout(layout)
 
     def set_engine(self, new_engine):
         try:
@@ -116,3 +89,103 @@ class NavigationBar(QWidget):
         selected_ua = user_agents.get(text, "")
         if self.engine:
             self.engine.set_custom_user_agent(selected_ua)
+
+
+class ToolsSidebar(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setFixedWidth(220)
+
+        # Styling
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #1a0e30;
+                color: #f3e8ff;
+                font-family: 'Segoe UI', sans-serif;
+            }
+            QLabel {
+                color: #c084fc;
+                font-weight: 700;
+                font-size: 13px;
+                padding: 4px;
+            }
+            QPushButton {
+                background-color: #251442;
+                border: 1px solid rgba(192, 132, 252, 0.25);
+                border-radius: 10px;
+                padding: 9px 14px;
+                color: #e9d5ff;
+                font-weight: 600;
+                text-align: left;
+            }
+            QPushButton:hover {
+                background-color: #381c63;
+                border: 1px solid #c084fc;
+                color: #ffffff;
+            }
+            QComboBox {
+                background-color: #251442;
+                border: 1px solid rgba(192, 132, 252, 0.25);
+                border-radius: 10px;
+                padding: 6px 10px;
+                color: #e9d5ff;
+            }
+        """)
+
+        # Title
+        self.title_label = QLabel("🛠️ Security Tools")
+
+        # Tool Action Buttons
+        self.scan_btn = QPushButton("🔍 Scan Site")
+        self.subdomain_btn = QPushButton("🕵️ Subdomains")
+        self.traffic_btn = QPushButton("🌐 Traffic Monitor")
+        self.notes_btn = QPushButton("📝 Payload Notes")
+        self.bookmark_btn = QPushButton("⭐ Bookmark Page")
+        self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
+        
+        self.media_label = QLabel("📥 Downloader")
+        self.quality_selector = QComboBox()
+        self.quality_selector.addItems(["Best", "1080p", "720p", "480p", "360p"])
+        self.download_btn = QPushButton("📥 Download Video")
+
+        self.game_label = QLabel("🎮 Downtime")
+        self.game_btn = QPushButton("🎮 Mini Game")
+
+        # Scroll Content
+        content_widget = QWidget()
+        layout = QVBoxLayout()
+        layout.setContentsMargins(10, 12, 10, 12)
+        layout.setSpacing(10)
+        
+        layout.addWidget(self.title_label)
+        layout.addWidget(self.scan_btn)
+        layout.addWidget(self.subdomain_btn)
+        layout.addWidget(self.traffic_btn)
+        layout.addWidget(self.notes_btn)
+        layout.addWidget(self.bookmark_btn)
+        layout.addWidget(self.view_bookmarks_btn)
+        
+        layout.addSpacing(10)
+        layout.addWidget(self.media_label)
+        layout.addWidget(self.quality_selector)
+        layout.addWidget(self.download_btn)
+
+        layout.addSpacing(10)
+        layout.addWidget(self.game_label)
+        layout.addWidget(self.game_btn)
+        layout.addStretch()
+
+        content_widget.setLayout(layout)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(content_widget)
+        scroll.setStyleSheet("QScrollArea { border: none; }")
+
+        main_layout = QVBoxLayout()
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.addWidget(scroll)
+        self.setLayout(main_layout)
+
+    def toggle_sidebar(self):
+        self.setVisible(not self.isVisible())
