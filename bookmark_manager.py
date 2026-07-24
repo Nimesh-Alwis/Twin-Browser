@@ -5,7 +5,41 @@ class BookmarkManager(QWidget):
         super().__init__()
         self.browser = browser_window
         self.setWindowTitle("My Bookmarks")
-        self.resize(300, 400)
+        self.resize(360, 450)
+
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #140b24;
+                color: #f3e8ff;
+                font-family: 'Segoe UI', sans-serif;
+            }
+            QListWidget {
+                background-color: #201138;
+                border: 1px solid rgba(192, 132, 252, 0.3);
+                border-radius: 10px;
+                padding: 6px;
+                color: #f3e8ff;
+            }
+            QListWidget::item {
+                padding: 8px;
+                border-radius: 6px;
+            }
+            QListWidget::item:hover {
+                background-color: #351a5c;
+                color: #ffffff;
+            }
+            QListWidget::item:selected {
+                background-color: #a855f7;
+                color: #140b24;
+                font-weight: bold;
+            }
+            QLabel {
+                color: #c084fc;
+                font-weight: 600;
+                font-size: 13px;
+                margin-bottom: 4px;
+            }
+        """)
 
         self.list_widget = QListWidget()
         self.load_bookmarks()

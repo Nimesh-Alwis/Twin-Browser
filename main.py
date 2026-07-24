@@ -11,65 +11,124 @@ from traffic_monitor import TrafficMonitor
 from video_downloader import DownloadThread
 
 
-CYBERPUNK_STYLE = """
+VIVALDI_PURPLE_STYLE = """
 QMainWindow {
-    background-color: #0f1117; /* Softer dark */
+    background-color: #140b24;
 }
 
 QWidget {
-    background-color: #0f1117;
-    color: #c9d1d9; /* Soft light gray instead of harsh green */
-    font-family: 'Segoe UI', 'Courier New', monospace;
-    font-size: 14px;
+    background-color: #140b24;
+    color: #f3e8ff;
+    font-family: 'Segoe UI', 'Segoe UI Emoji', 'SF Pro Display', sans-serif;
+    font-size: 13px;
 }
 
-/* Input Fields */
+/* Address Bar / Input Fields */
 QLineEdit {
-    background-color: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    padding: 6px;
-    color: #58a6ff; /* Soft blue */
+    background-color: #261642;
+    border: 1px solid rgba(192, 132, 252, 0.35);
+    border-radius: 16px;
+    padding: 7px 16px;
+    color: #f5e6ff;
+    selection-background-color: #a855f7;
+    font-size: 13px;
 }
 
 QLineEdit:focus {
-    border: 1px solid #58a6ff;
-    background-color: #1c2128;
+    border: 1.5px solid #c084fc;
+    background-color: #2f1b52;
 }
 
-/* Buttons */
+/* Navigation & Action Buttons */
 QPushButton {
-    background-color: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    padding: 8px 15px;
-    color: #58a6ff;
-    font-weight: bold;
+    background-color: #23143c;
+    border: 1px solid rgba(192, 132, 252, 0.25);
+    border-radius: 10px;
+    padding: 6px 14px;
+    color: #e9d5ff;
+    font-weight: 600;
 }
 
 QPushButton:hover {
-    background-color: #21262d;
-    border: 1px solid #58a6ff;
+    background-color: #381c63;
+    border: 1px solid #c084fc;
     color: #ffffff;
 }
 
 QPushButton:pressed {
-    background-color: #58a6ff;
-    color: #0f1117;
+    background-color: #a855f7;
+    color: #140b24;
 }
 
-/* Lists, Text Areas & Combo Box */
-QListWidget, QTextEdit, QComboBox {
-    background-color: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 6px;
-    color: #c9d1d9;
+/* ComboBox Styling */
+QComboBox {
+    background-color: #23143c;
+    border: 1px solid rgba(192, 132, 252, 0.25);
+    border-radius: 10px;
+    padding: 6px 12px;
+    color: #e9d5ff;
+    font-weight: 500;
+}
+
+QComboBox:hover {
+    border: 1px solid #c084fc;
+    background-color: #381c63;
+}
+
+QComboBox::drop-down {
+    border: 0px;
+    width: 20px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #23143c;
+    border: 1px solid #c084fc;
+    selection-background-color: #a855f7;
+    color: #f3e8ff;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+/* Progress Bar */
+QProgressBar {
+    background-color: #1c1033;
+    border: 1px solid rgba(192, 132, 252, 0.3);
+    border-radius: 8px;
+    text-align: center;
+    color: #f3e8ff;
+    height: 16px;
+}
+
+QProgressBar::chunk {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 #a855f7, stop:1 #ec4899);
+    border-radius: 7px;
 }
 
 /* Labels */
 QLabel {
-    color: #8b949e; /* softer than pink */
+    color: #d8b4fe;
     font-weight: 500;
+}
+
+/* Message Boxes & Popups */
+QMessageBox {
+    background-color: #1c1033;
+    color: #f3e8ff;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background: #140b24;
+    width: 10px;
+    margin: 0px;
+}
+QScrollBar::handle:vertical {
+    background: #3b1d66;
+    min-height: 20px;
+    border-radius: 5px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #a855f7;
 }
 """
 
@@ -79,27 +138,26 @@ class TwinBrowser(QMainWindow):
 
         self.engine = TwinEngine()
         self.security = SecurityManager()
-        self.scanner = SiteScanner() # 2. Scanner එක පණගන්වන්න
-        # Navigation bar එක සම්බන්ධ කිරීම
+        self.scanner = SiteScanner()
+        
         self.nav_bar = NavigationBar(self.engine)
         
         self.nav_bar.scan_btn.clicked.connect(self.run_site_scan)
-        self.nav_bar.game_btn.clicked.connect(self.start_snake_game) # Game බොත්තම සම්බන්ධ කිරීම
-        
-        # පරණ Connection එක අයින් කර අලුත් එක (secure_navigate) සම්බන්ධ කිරීම
+        self.nav_bar.game_btn.clicked.connect(self.start_snake_game)
         self.nav_bar.notes_btn.clicked.connect(self.open_editor)
         self.nav_bar.bookmark_btn.clicked.connect(self.add_bookmark)
         self.nav_bar.view_bookmarks_btn.clicked.connect(self.show_bookmarks)
         self.engine.traffic_signal.connect(self.log_traffic) 
-        self.monitor = TrafficMonitor() # මේ පේළිය අනිවාර්යයෙන්ම ඕනේ
+        self.monitor = TrafficMonitor()
         self.nav_bar.traffic_btn.clicked.connect(self.monitor.show)
         self.nav_bar.home_btn.clicked.connect(self.go_home)
         self.nav_bar.download_btn.clicked.connect(self.start_video_download)
         self.p_bar = QProgressBar()
         self.speed_label = QLabel("Speed: 0 MB/s")
-        self.p_bar.setVisible(False) # සාමාන්‍ය වෙලාවට පේන්නෙ නැහැ
-        # ... (අනිත් කේතයන්) ...
-        self.setStyleSheet(CYBERPUNK_STYLE)
+        self.p_bar.setVisible(False)
+        self.speed_label.setVisible(False)
+        
+        self.setStyleSheet(VIVALDI_PURPLE_STYLE)
 
         try:
             self.nav_bar.address_bar.returnPressed.disconnect()
@@ -108,10 +166,11 @@ class TwinBrowser(QMainWindow):
             
         self.nav_bar.address_bar.returnPressed.connect(self.secure_navigate)
 
-        # Layout එක සැකසීම
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
         layout.addWidget(self.nav_bar)
-        layout.addWidget(self.engine)
+        layout.addWidget(self.engine, stretch=1)
         layout.addWidget(self.speed_label)
         layout.addWidget(self.p_bar)
 
@@ -119,8 +178,8 @@ class TwinBrowser(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
 
-        self.setWindowTitle("Twin-Browser Secure v1.5")
-        self.resize(1000, 700)
+        self.setWindowTitle("Twin-Browser Futuristic Edition v2.0")
+        self.resize(1100, 750)
 
     def start_video_download(self):
         url = self.nav_bar.address_bar.text()

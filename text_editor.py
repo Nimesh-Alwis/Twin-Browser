@@ -5,7 +5,52 @@ class PayloadNotebook(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Twin-Browser: Payload Notebook")
-        self.resize(700, 500)
+        self.resize(750, 520)
+
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #140b24;
+                color: #f3e8ff;
+                font-family: 'Segoe UI', sans-serif;
+            }
+            QListWidget, QTextEdit {
+                background-color: #201138;
+                border: 1px solid rgba(192, 132, 252, 0.3);
+                border-radius: 10px;
+                padding: 8px;
+                color: #f3e8ff;
+            }
+            QListWidget::item {
+                padding: 6px;
+                border-radius: 6px;
+            }
+            QListWidget::item:hover {
+                background-color: #351a5c;
+            }
+            QListWidget::item:selected {
+                background-color: #a855f7;
+                color: #140b24;
+                font-weight: bold;
+            }
+            QPushButton {
+                background-color: #2b1747;
+                border: 1px solid rgba(192, 132, 252, 0.3);
+                border-radius: 8px;
+                padding: 8px 16px;
+                color: #e9d5ff;
+                font-weight: 600;
+            }
+            QPushButton:hover {
+                background-color: #3d1c69;
+                border: 1px solid #c084fc;
+                color: #ffffff;
+            }
+            QLabel {
+                color: #c084fc;
+                font-weight: 600;
+                font-size: 14px;
+            }
+        """)
 
         # 1. Payload Library දත්ත
         self.payloads = {

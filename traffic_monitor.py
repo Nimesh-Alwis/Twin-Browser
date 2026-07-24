@@ -6,25 +6,30 @@ class TrafficMonitor(QWidget):
         self.setWindowTitle("Twin-Browser: Network Traffic Monitor")
         self.resize(800, 400)
 
-        # 1. Style එක Class එක ඇතුළේදී apply කිරීම
+        # 1. Futuristic Vivaldi Purple Styling
         self.setStyleSheet("""
+            QWidget {
+                background-color: #140b24;
+                color: #f3e8ff;
+                font-family: 'Consolas', 'Segoe UI Monospace', monospace;
+            }
             QTableWidget {
-                background-color: #0d0d0d;
-                color: #00ff41;
-                gridline-color: #ff00ff;
-                border: 1px solid #00ffff;
-                font-family: 'Courier New', monospace;
+                background-color: #1a0e30;
+                color: #e9d5ff;
+                gridline-color: rgba(192, 132, 252, 0.15);
+                border: 1px solid rgba(192, 132, 252, 0.3);
+                border-radius: 8px;
             }
             QHeaderView::section {
-                background-color: #1a1a1a;
-                color: #ff00ff;
-                padding: 5px;
-                border: 1px solid #00ffff;
+                background-color: #251442;
+                color: #c084fc;
+                padding: 6px;
+                border: 1px solid rgba(192, 132, 252, 0.2);
                 font-weight: bold;
             }
             QTableWidget::item:selected {
-                background-color: #ff00ff;
-                color: #000000;
+                background-color: #a855f7;
+                color: #140b24;
             }
         """)
 
