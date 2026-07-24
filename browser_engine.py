@@ -5,14 +5,21 @@ from PyQt6.QtCore import QUrl, pyqtSignal
 class TwinEngine(QWebEngineView):
     traffic_signal = pyqtSignal(str, str, str) 
 
-    def __init__(self):
+    def __init__(self, main_window=None):
         super().__init__()
+        self.main_window = main_window
         self.default_ua = self.page().profile().httpUserAgent()
         self.home_file_path = os.path.abspath("homepage.html")
         self.load_home()
         
         self.urlChanged.connect(self.on_url_changed)
         self.loadFinished.connect(self.on_load_finished)
+
+    def createWindow(self, _type):
+        new_engine = TwinEngine(main_window=self.main_window)
+        if self.main_window:
+            self.main_window.add_tab_from_engine(new_engine)
+        return new_engine
 
     def load_home(self):
         if os.path.exists(self.home_file_path):

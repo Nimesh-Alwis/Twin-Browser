@@ -1,5 +1,6 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QMessageBox, QProgressBar, QLabel
+from PyQt6.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QWidget, 
+                             QMessageBox, QProgressBar, QLabel, QTabWidget, QPushButton)
 from browser_engine import TwinEngine
 from ui_components import NavigationBar
 from security_manager import SecurityManager
@@ -22,6 +23,39 @@ QWidget {
     color: #f3e8ff;
     font-family: 'Segoe UI', 'Segoe UI Emoji', 'SF Pro Display', sans-serif;
     font-size: 13px;
+}
+
+/* Tab Widget & Tab Bar */
+QTabWidget::pane {
+    border: none;
+    background-color: #140b24;
+}
+
+QTabBar::tab {
+    background-color: #1c1033;
+    color: #b8a2d1;
+    border: 1px solid rgba(192, 132, 252, 0.15);
+    border-bottom: none;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 7px 16px;
+    min-width: 110px;
+    max-width: 220px;
+    margin-right: 3px;
+    font-weight: 500;
+}
+
+QTabBar::tab:selected {
+    background-color: #261642;
+    color: #ffffff;
+    font-weight: 600;
+    border: 1px solid rgba(192, 132, 252, 0.4);
+    border-bottom: 2.5px solid #a855f7;
+}
+
+QTabBar::tab:hover:!selected {
+    background-color: #2b1747;
+    color: #e9d5ff;
 }
 
 /* Address Bar / Input Fields */
@@ -137,11 +171,29 @@ class TwinBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.engine = TwinEngine()
         self.security = SecurityManager()
         self.scanner = SiteScanner()
-        
-        self.nav_bar = NavigationBar(self.engine)
+        self.monitor = TrafficMonitor()
+
+        # Multi-Tab Widget
+        self.tab_widget = QTabWidget()
+        self.tab_widget.setTabsClosable(True)
+        self.tab_widget.setMovable(True)
+        self.tab_widget.tabCloseRequested.connect(self.close_tab)
+        self.tab_widget.currentChanged.connect(self.on_tab_changed)
+
+        # Add New Tab Button (+)
+        self.add_tab_btn = QPushButton("➕")
+        self.add_tab_btn.setToolTip("Open New Tab")
+        self.add_tab_btn.setStyleSheet("padding: 4px 10px; border-radius: 6px; font-weight: bold;")
+        self.add_tab_btn.clicked.connect(lambda: self.add_new_tab())
+        self.tab_widget.setCornerWidget(self.add_tab_btn)
+
+        # Create initial tab
+        self.add_new_tab()
+
+        # Navigation bar
+        self.nav_bar = NavigationBar(self.current_engine())
         
         self.nav_bar.scan_btn.clicked.connect(self.run_site_scan)
         self.nav_bar.subdomain_btn.clicked.connect(self.run_subdomain_finder)
@@ -149,11 +201,10 @@ class TwinBrowser(QMainWindow):
         self.nav_bar.notes_btn.clicked.connect(self.open_editor)
         self.nav_bar.bookmark_btn.clicked.connect(self.add_bookmark)
         self.nav_bar.view_bookmarks_btn.clicked.connect(self.show_bookmarks)
-        self.engine.traffic_signal.connect(self.log_traffic) 
-        self.monitor = TrafficMonitor()
         self.nav_bar.traffic_btn.clicked.connect(self.monitor.show)
         self.nav_bar.home_btn.clicked.connect(self.go_home)
         self.nav_bar.download_btn.clicked.connect(self.start_video_download)
+        
         self.p_bar = QProgressBar()
         self.speed_label = QLabel("Speed: 0 MB/s")
         self.p_bar.setVisible(False)
@@ -163,7 +214,7 @@ class TwinBrowser(QMainWindow):
 
         try:
             self.nav_bar.address_bar.returnPressed.disconnect()
-        except:
+        except Exception:
             pass
             
         self.nav_bar.address_bar.returnPressed.connect(self.secure_navigate)
@@ -172,7 +223,7 @@ class TwinBrowser(QMainWindow):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         layout.addWidget(self.nav_bar)
-        layout.addWidget(self.engine, stretch=1)
+        layout.addWidget(self.tab_widget, stretch=1)
         layout.addWidget(self.speed_label)
         layout.addWidget(self.p_bar)
 
@@ -183,9 +234,53 @@ class TwinBrowser(QMainWindow):
         self.setWindowTitle("Twin-Browser Futuristic Edition v2.0")
         self.resize(1100, 750)
 
+    def current_engine(self):
+        return self.tab_widget.currentWidget()
+
+    def add_new_tab(self, url=None):
+        engine = TwinEngine(main_window=self)
+        return self.add_tab_from_engine(engine, url=url)
+
+    def add_tab_from_engine(self, engine, url=None):
+        engine.traffic_signal.connect(self.log_traffic)
+        
+        index = self.tab_widget.addTab(engine, "New Tab")
+        self.tab_widget.setCurrentIndex(index)
+
+        # Update tab title dynamically when page title changes
+        engine.titleChanged.connect(lambda title, e=engine: self.update_tab_title(e, title))
+
+        if url:
+            engine.load_new_url(url)
+
+        return engine
+
+    def update_tab_title(self, engine, title):
+        idx = self.tab_widget.indexOf(engine)
+        if idx != -1:
+            clean_title = title if title and title != "about:blank" else "New Tab"
+            if len(clean_title) > 22:
+                clean_title = clean_title[:20] + "..."
+            self.tab_widget.setTabText(idx, clean_title)
+
+    def close_tab(self, index):
+        if self.tab_widget.count() > 1:
+            engine = self.tab_widget.widget(index)
+            self.tab_widget.removeTab(index)
+            engine.deleteLater()
+        else:
+            # If it's the last tab, reset to startpage instead of closing window
+            self.current_engine().load_home()
+
+    def on_tab_changed(self, index):
+        engine = self.current_engine()
+        if engine:
+            self.nav_bar.set_engine(engine)
+
     def start_video_download(self):
-        url = self.nav_bar.address_bar.text()
-        quality = self.nav_bar.quality_selector.currentText() # User තේරූ quality එක
+        engine = self.current_engine()
+        url = self.nav_bar.address_bar.text() if engine else ""
+        quality = self.nav_bar.quality_selector.currentText()
 
         if url:
             self.p_bar.setVisible(True)
@@ -193,12 +288,9 @@ class TwinBrowser(QMainWindow):
             self.p_bar.setValue(0)
             
             self.download_worker = DownloadThread(url, quality)
-            
-            # Signals සම්බන්ධ කිරීම
             self.download_worker.progress_signal.connect(self.p_bar.setValue)
             self.download_worker.speed_signal.connect(self.speed_label.setText)
             self.download_worker.finished_signal.connect(self.on_download_finished)
-            
             self.download_worker.start()
 
     def on_download_finished(self, message):
@@ -207,8 +299,10 @@ class TwinBrowser(QMainWindow):
         QMessageBox.information(self, "Twin-Browser", message)
 
     def go_home(self):
-        self.nav_bar.address_bar.setText("twin://startpage")
-        self.engine.load_home()
+        engine = self.current_engine()
+        if engine:
+            self.nav_bar.address_bar.setText("twin://startpage")
+            engine.load_home()
 
     def log_traffic(self, method, status, url):
         self.monitor.add_log(method, status, url)
@@ -250,10 +344,13 @@ class TwinBrowser(QMainWindow):
 
     def secure_navigate(self):
         url = self.nav_bar.address_bar.text().strip()
-        
+        engine = self.current_engine()
+        if not engine:
+            return
+
         if not url or url == "twin://startpage" or "homepage.html" in url:
             self.nav_bar.address_bar.setText("twin://startpage")
-            self.engine.load_home()
+            engine.load_home()
             return
 
         if not (url.startswith('http://') or url.startswith('https://')):
@@ -262,12 +359,11 @@ class TwinBrowser(QMainWindow):
         is_safe, reason = self.security.is_url_safe(url)
         
         if is_safe:
-            self.engine.load_new_url(url)
+            engine.load_new_url(url)
         else:
             QMessageBox.warning(self, "Security Risk", f"Access Blocked: {reason}")
 
 
-# මෙතැන් සිට පේළි Class එකෙන් පිටත (වම් පැත්තටම හේත්තු වී) තිබිය යුතුයි
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = TwinBrowser()

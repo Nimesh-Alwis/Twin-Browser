@@ -77,9 +77,25 @@ class NavigationBar(QWidget):
 
         self.setLayout(main_layout)
 
+    def set_engine(self, new_engine):
+        try:
+            self.back_btn.clicked.disconnect()
+            self.forward_btn.clicked.disconnect()
+            self.reload_btn.clicked.disconnect()
+            self.engine.urlChanged.disconnect(self.update_address_bar)
+        except Exception:
+            pass
+
+        self.engine = new_engine
+        self.back_btn.clicked.connect(self.engine.back)
+        self.forward_btn.clicked.connect(self.engine.forward)
+        self.reload_btn.clicked.connect(self.engine.reload)
+        self.engine.urlChanged.connect(self.update_address_bar)
+        self.update_address_bar(self.engine.url())
+
     def navigate(self):
         url = self.address_bar.text()
-        if url.strip():
+        if url.strip() and self.engine:
             self.engine.load_new_url(url)
 
     def update_address_bar(self, qurl):
@@ -98,4 +114,5 @@ class NavigationBar(QWidget):
             "cURL": "curl/7.68.0"
         }
         selected_ua = user_agents.get(text, "")
-        self.engine.set_custom_user_agent(selected_ua)
+        if self.engine:
+            self.engine.set_custom_user_agent(selected_ua)
