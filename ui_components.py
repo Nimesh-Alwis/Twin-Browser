@@ -142,6 +142,7 @@ class ToolsSidebar(QWidget):
         self.notes_btn = QPushButton("📝 Payload Notes")
         self.bookmark_btn = QPushButton("⭐ Bookmark Page")
         self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
+        self.theme_btn = QPushButton("🎨 Customize Theme")
         
         self.media_label = QLabel("📥 Downloader")
         self.quality_selector = QComboBox()
@@ -164,6 +165,7 @@ class ToolsSidebar(QWidget):
         layout.addWidget(self.notes_btn)
         layout.addWidget(self.bookmark_btn)
         layout.addWidget(self.view_bookmarks_btn)
+        layout.addWidget(self.theme_btn)
         
         layout.addSpacing(10)
         layout.addWidget(self.media_label)

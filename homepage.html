@@ -23,7 +23,7 @@
             color: #f3e8ff;
             overflow: hidden;
             user-select: none;
-            transition: background 0.5s ease-in-out;
+            transition: background 0.4s ease-in-out;
         }
 
         /* Overlay for subtle dark contrast */
@@ -33,7 +33,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(20, 11, 36, 0.25) 0%, rgba(20, 11, 36, 0.75) 100%);
+            background: radial-gradient(circle at center, rgba(20, 11, 36, 0.2) 0%, rgba(20, 11, 36, 0.7) 100%);
             z-index: 1;
         }
 
@@ -269,6 +269,8 @@
         <button class="wp-btn" onclick="setWallpaper('sunset')">🌄 Sunset</button>
         <button class="wp-btn" onclick="setWallpaper('cyber')">🌆 Neon Cyber</button>
         <button class="wp-btn" onclick="setWallpaper('aurora')">🌌 Aurora Space</button>
+        <button class="wp-btn" onclick="document.getElementById('localWpInput').click()">📁 Custom Wallpaper</button>
+        <input type="file" id="localWpInput" accept="image/*" style="display:none;" onchange="uploadLocalWallpaper(event)">
     </div>
 
     <script>
@@ -277,7 +279,6 @@
             const query = document.getElementById('searchInput').value.trim();
             if (!query) return;
 
-            // URL check or search query
             if (query.startsWith('http://') || query.startsWith('https://')) {
                 window.location.href = query;
             } else if (query.includes('.') && !query.includes(' ')) {
@@ -298,12 +299,37 @@
                 document.body.style.background = wallpapers[theme] + " no-repeat center center fixed";
                 document.body.style.backgroundSize = "cover";
                 localStorage.setItem('twin_wallpaper', theme);
+                localStorage.removeItem('twin_custom_wp_data');
+            }
+        }
+
+        function uploadLocalWallpaper(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const dataUrl = e.target.result;
+                    document.body.style.background = "url('" + dataUrl + "') no-repeat center center fixed";
+                    document.body.style.backgroundSize = "cover";
+                    try {
+                        localStorage.setItem('twin_custom_wp_data', dataUrl);
+                        localStorage.removeItem('twin_wallpaper');
+                    } catch(err) {
+                        console.log("Local storage full for large image:", err);
+                    }
+                };
+                reader.readAsDataURL(file);
             }
         }
 
         // Restore saved wallpaper
+        const customData = localStorage.getItem('twin_custom_wp_data');
         const savedWp = localStorage.getItem('twin_wallpaper');
-        if (savedWp && wallpapers[savedWp]) {
+
+        if (customData) {
+            document.body.style.background = "url('" + customData + "') no-repeat center center fixed";
+            document.body.style.backgroundSize = "cover";
+        } else if (savedWp && wallpapers[savedWp]) {
             setWallpaper(savedWp);
         }
     </script>
