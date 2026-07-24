@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twin-Browser Startpage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #140b24 url('purple_sunset_wallpaper.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #f3e8ff;
+            overflow: hidden;
+            user-select: none;
+            transition: background 0.5s ease-in-out;
+        }
+
+        /* Overlay for subtle dark contrast */
+        .backdrop-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(20, 11, 36, 0.25) 0%, rgba(20, 11, 36, 0.75) 100%);
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 90%;
+            max-width: 850px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+        }
+
+        /* Brand Title */
+        .brand {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(192, 132, 252, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand span {
+            background: linear-gradient(135deg, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Search Box Bar */
+        .search-box {
+            width: 100%;
+            max-width: 680px;
+            position: relative;
+            background: rgba(35, 18, 60, 0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(192, 132, 252, 0.4);
+            border-radius: 30px;
+            padding: 6px 10px 6px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            background: rgba(45, 22, 75, 0.75);
+            border-color: #c084fc;
+            box-shadow: 0 0 25px rgba(192, 132, 252, 0.5);
+            transform: scale(1.01);
+        }
+
+        .search-icon {
+            font-size: 1.2rem;
+            color: #c084fc;
+            margin-right: 12px;
+        }
+
+        .search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: #b8a2d1;
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #a855f7, #c084fc);
+            border: none;
+            color: #ffffff;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Speed Dial Grid */
+        .speed-dial {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 720px;
+            margin-top: 10px;
+        }
+
+        .tile {
+            background: rgba(30, 15, 50, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(192, 132, 252, 0.25);
+            border-radius: 16px;
+            padding: 16px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #f3e8ff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .tile:hover {
+            background: rgba(55, 25, 90, 0.75);
+            border-color: #c084fc;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(192, 132, 252, 0.3);
+        }
+
+        .tile-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tile-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #e9d5ff;
+        }
+
+        /* Theme / Wallpaper Switcher Panel */
+        .wallpaper-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            z-index: 3;
+            display: flex;
+            gap: 8px;
+        }
+
+        .wp-btn {
+            background: rgba(25, 12, 42, 0.65);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(192, 132, 252, 0.3);
+            color: #d8b4fe;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .wp-btn:hover {
+            background: #a855f7;
+            color: #140b24;
+            border-color: #c084fc;
+        }
+    </style>
+</head>
+<body>
+    <div class="backdrop-overlay"></div>
+
+    <div class="container">
+        <!-- Brand Title -->
+        <div class="brand">
+            🌐 <span>Twin-Browser</span>
+        </div>
+
+        <!-- Centered Search Box -->
+        <form class="search-box" id="searchForm" onsubmit="handleSearch(event)">
+            <span class="search-icon">🔍</span>
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Search the Web or enter an address..." 
+                autofocus
+                autocomplete="off"
+            >
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+
+        <!-- Speed Dial Grid -->
+        <div class="speed-dial">
+            <a href="https://www.google.com" class="tile">
+                <div class="tile-icon" style="color: #4285F4;">G</div>
+                <span class="tile-title">Google</span>
+            </a>
+            <a href="https://www.youtube.com" class="tile">
+                <div class="tile-icon" style="color: #FF0000;">▶</div>
+                <span class="tile-title">YouTube</span>
+            </a>
+            <a href="https://github.com" class="tile">
+                <div class="tile-icon" style="color: #ffffff;">🐙</div>
+                <span class="tile-title">GitHub</span>
+            </a>
+            <a href="https://www.wikipedia.org" class="tile">
+                <div class="tile-icon" style="color: #e2e8f0;">W</div>
+                <span class="tile-title">Wikipedia</span>
+            </a>
+            <a href="https://chatgpt.com" class="tile">
+                <div class="tile-icon" style="color: #10a37f;">🤖</div>
+                <span class="tile-title">ChatGPT</span>
+            </a>
+            <a href="https://www.reddit.com" class="tile">
+                <div class="tile-icon" style="color: #FF4500;">🔥</div>
+                <span class="tile-title">Reddit</span>
+            </a>
+            <a href="https://www.accuweather.com" class="tile">
+                <div class="tile-icon" style="color: #ffb703;">☀️</div>
+                <span class="tile-title">Weather</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Wallpaper Switcher Bar -->
+    <div class="wallpaper-controls">
+        <button class="wp-btn" onclick="setWallpaper('sunset')">🌄 Sunset</button>
+        <button class="wp-btn" onclick="setWallpaper('cyber')">🌆 Neon Cyber</button>
+        <button class="wp-btn" onclick="setWallpaper('aurora')">🌌 Aurora Space</button>
+    </div>
+
+    <script>
+        function handleSearch(e) {
+            e.preventDefault();
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            // URL check or search query
+            if (query.startsWith('http://') || query.startsWith('https://')) {
+                window.location.href = query;
+            } else if (query.includes('.') && !query.includes(' ')) {
+                window.location.href = 'https://' + query;
+            } else {
+                window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(query);
+            }
+        }
+
+        const wallpapers = {
+            'sunset': "url('purple_sunset_wallpaper.png')",
+            'cyber': "linear-gradient(135deg, #0f0c20 0%, #2b1055 50%, #7597de 100%)",
+            'aurora': "linear-gradient(135deg, #090a0f 0%, #171b30 40%, #2c1a4d 70%, #581c87 100%)"
+        };
+
+        function setWallpaper(theme) {
+            if (wallpapers[theme]) {
+                document.body.style.background = wallpapers[theme] + " no-repeat center center fixed";
+                document.body.style.backgroundSize = "cover";
+                localStorage.setItem('twin_wallpaper', theme);
+            }
+        }
+
+        // Restore saved wallpaper
+        const savedWp = localStorage.getItem('twin_wallpaper');
+        if (savedWp && wallpapers[savedWp]) {
+            setWallpaper(savedWp);
+        }
+    </script>
+</body>
+</html>

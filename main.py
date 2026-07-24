@@ -205,9 +205,8 @@ class TwinBrowser(QMainWindow):
         QMessageBox.information(self, "Twin-Browser", message)
 
     def go_home(self):
-        home_url = "https://www.google.com" # ඔයා කැමති Home පිටුව මෙතැනට දෙන්න
-        self.nav_bar.address_bar.setText(home_url)
-        self.engine.load_new_url(home_url)
+        self.nav_bar.address_bar.setText("twin://startpage")
+        self.engine.load_home()
 
     def log_traffic(self, method, status, url):
         self.monitor.add_log(method, status, url)
@@ -217,42 +216,36 @@ class TwinBrowser(QMainWindow):
         self.editor.show()
 
     def show_bookmarks(self):
-        # Bookmark Manager එක විවෘත කිරීම
         self.bookmark_view = BookmarkManager(self)
         self.bookmark_view.show()
 
     def add_bookmark(self):
         url = self.nav_bar.address_bar.text()
-        if url:
+        if url and url != "twin://startpage":
             with open("bookmarks.txt", "a") as f:
                 f.write(url + "\n")
             QMessageBox.information(self, "Success", "Page Bookmarked!")
 
-    # 3. Snake Game එක පණගන්වන Function එක
     def start_snake_game(self):
-        # Game එක අලුත් Window එකක් ලෙස විවෘත කිරීම
         self.game_window = SnakeGame()
         self.game_window.show()
 
-    # 4. ස්කෑන් එක සිදු කරන අලුත් Function එක
     def run_site_scan(self):
-        # දැනට address bar එකේ තියෙන URL එක ගන්නවා
         current_url = self.nav_bar.address_bar.text()
-        
-        if current_url:
-            # ස්කෑන් එක කරලා report එකක් ගන්නවා
+        if current_url and current_url != "twin://startpage":
             scan_report = self.scanner.scan(current_url)
-            
-            # ප්‍රතිඵලය Popup window එකකින් පෙන්වනවා
             QMessageBox.information(self, "Site Scan Results", scan_report)
         else:
-            QMessageBox.warning(self, "Input Error", "Please enter a URL first!")
+            QMessageBox.warning(self, "Input Error", "Please enter a valid target URL first!")
 
-    # මේ function එක Class එක ඇතුළත (Indented) තිබිය යුතුමයි
     def secure_navigate(self):
-        url = self.nav_bar.address_bar.text()
+        url = self.nav_bar.address_bar.text().strip()
         
-        # URL එකේ Protocol එක පරීක්ෂාව
+        if not url or url == "twin://startpage" or "homepage.html" in url:
+            self.nav_bar.address_bar.setText("twin://startpage")
+            self.engine.load_home()
+            return
+
         if not (url.startswith('http://') or url.startswith('https://')):
             url = 'https://' + url
 

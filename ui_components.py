@@ -81,7 +81,11 @@ class NavigationBar(QWidget):
             self.engine.load_new_url(url)
 
     def update_address_bar(self, qurl):
-        self.address_bar.setText(qurl.toString())
+        url_str = qurl.toString()
+        if "homepage.html" in url_str:
+            self.address_bar.setText("twin://startpage")
+        else:
+            self.address_bar.setText(url_str)
 
     def change_user_agent(self, text):
         user_agents = {
