@@ -144,6 +144,11 @@ class ToolsSidebar(QWidget):
         self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
         self.theme_btn = QPushButton("🎨 Customize Theme")
         
+        # AI & Productivity Buttons
+        self.ai_hub_btn = QPushButton("🤖 ALL AI Hub")
+        self.ai_hub_btn.setStyleSheet("background-color: #7e22ce; color: #ffffff; font-weight: bold; border: 1.5px solid #c084fc;")
+        self.shortcuts_btn = QPushButton("⌨️ Custom Shortcuts")
+
         # New Productivity Buttons
         self.adblock_btn = QPushButton("🛡️ Ad-Blocker: ON")
         self.split_view_btn = QPushButton("🖥️ Split-Screen View")
@@ -166,6 +171,8 @@ class ToolsSidebar(QWidget):
         layout.setSpacing(8)
         
         layout.addWidget(self.title_label)
+        layout.addWidget(self.ai_hub_btn)
+        layout.addWidget(self.shortcuts_btn)
         layout.addWidget(self.adblock_btn)
         layout.addWidget(self.split_view_btn)
         layout.addWidget(self.incognito_btn)

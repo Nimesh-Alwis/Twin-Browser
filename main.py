@@ -19,6 +19,8 @@ from ad_blocker import AdBlockerInterceptor
 from download_manager import DownloadManagerWidget
 from split_screen import SplitScreenWidget
 from script_injector import ScriptInjectorWidget
+from ai_hub import AIHubWidget
+from shortcut_manager import ShortcutManagerWidget, DEFAULT_SHORTCUTS
 
 
 class TwinBrowser(QMainWindow):
@@ -35,6 +37,8 @@ class TwinBrowser(QMainWindow):
         self.monitor = TrafficMonitor()
         self.adblock_interceptor = AdBlockerInterceptor(enabled=True)
         self.download_manager = DownloadManagerWidget()
+        self.shortcut_manager_widget = ShortcutManagerWidget(main_window=self)
+        self.active_shortcuts = []
 
         # Left Collapsible Sidebar
         self.sidebar = ToolsSidebar()
@@ -66,6 +70,8 @@ class TwinBrowser(QMainWindow):
         self.nav_bar.home_btn.clicked.connect(self.go_home)
 
         # Connect Sidebar Tools Action Buttons
+        self.sidebar.ai_hub_btn.clicked.connect(self.open_ai_hub)
+        self.sidebar.shortcuts_btn.clicked.connect(self.open_shortcut_manager)
         self.sidebar.adblock_btn.clicked.connect(self.toggle_adblocker)
         self.sidebar.split_view_btn.clicked.connect(self.open_split_screen)
         self.sidebar.incognito_btn.clicked.connect(lambda: self.add_new_tab(is_private=True))
@@ -98,7 +104,7 @@ class TwinBrowser(QMainWindow):
             
         self.nav_bar.address_bar.returnPressed.connect(self.secure_navigate)
 
-        # Register Keyboard Shortcuts
+        # Register Dynamic Keyboard Shortcuts
         self.setup_keyboard_shortcuts()
 
         # Middle Split Area (Left Sidebar + Right Tab Widget)
@@ -120,25 +126,39 @@ class TwinBrowser(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
 
-        self.setWindowTitle("Twin-Browser Futuristic Edition v3.0")
+        self.setWindowTitle("Twin-Browser Futuristic Edition v3.5")
         self.resize(1180, 800)
 
     def setup_keyboard_shortcuts(self):
-        # Ctrl + T : New Tab
-        QShortcut(QKeySequence("Ctrl+T"), self, lambda: self.add_new_tab())
-        # Ctrl + W : Close Current Tab
-        QShortcut(QKeySequence("Ctrl+W"), self, self.close_current_tab)
-        # Ctrl + Shift + N : New Incognito Tab
-        QShortcut(QKeySequence("Ctrl+Shift+N"), self, lambda: self.add_new_tab(is_private=True))
-        # Ctrl + R / F5 : Reload Current Tab
-        QShortcut(QKeySequence("Ctrl+R"), self, self.reload_current_tab)
-        QShortcut(QKeySequence("F5"), self, self.reload_current_tab)
-        # Ctrl + D : Bookmark Page
-        QShortcut(QKeySequence("Ctrl+D"), self, self.add_bookmark)
-        # Ctrl + J : Open Download Manager
-        QShortcut(QKeySequence("Ctrl+J"), self, self.open_download_manager)
-        # Ctrl + Alt + S : Open Split Screen View
-        QShortcut(QKeySequence("Ctrl+Alt+S"), self, self.open_split_screen)
+        # Clear existing shortcuts
+        for sc in self.active_shortcuts:
+            sc.setEnabled(False)
+            sc.deleteLater()
+        self.active_shortcuts.clear()
+
+        user_shortcuts = self.shortcut_manager_widget.load_shortcuts()
+        
+        action_map = {
+            "Open ALL AI Hub": self.open_ai_hub,
+            "Open Shortcut Manager": self.open_shortcut_manager,
+            "New Tab": lambda: self.add_new_tab(),
+            "Close Current Tab": self.close_current_tab,
+            "New Incognito Tab": lambda: self.add_new_tab(is_private=True),
+            "Reload Page": self.reload_current_tab,
+            "Add Bookmark": self.add_bookmark,
+            "Open Download Manager": self.open_download_manager,
+            "Open Split Screen": self.open_split_screen,
+            "Open Script Injector": self.open_script_injector,
+            "Open Payload Notes": self.open_editor,
+            "Open Traffic Monitor": self.monitor.show
+        }
+
+        for action_name, key_str in user_shortcuts.items():
+            handler = action_map.get(action_name)
+            if handler and key_str:
+                sc = QShortcut(QKeySequence(key_str), self)
+                sc.activated.connect(handler)
+                self.active_shortcuts.append(sc)
 
     def current_engine(self):
         widget = self.tab_widget.currentWidget()
@@ -193,6 +213,14 @@ class TwinBrowser(QMainWindow):
         if engine:
             engine.reload()
 
+    def open_ai_hub(self):
+        self.ai_hub_view = AIHubWidget(main_window=self)
+        self.ai_hub_view.show()
+
+    def open_shortcut_manager(self):
+        self.shortcut_manager_widget.populate_table()
+        self.shortcut_manager_widget.show()
+
     def toggle_adblocker(self):
         new_state = not self.adblock_interceptor.enabled
         self.adblock_interceptor.set_enabled(new_state)
@@ -221,7 +249,7 @@ class TwinBrowser(QMainWindow):
                 self.nav_bar.set_engine(engine)
                 self.nav_bar.address_bar.setEnabled(True)
             else:
-                self.nav_bar.address_bar.setText("twin://splitview")
+                self.nav_bar.address_bar.setText("twin://specialview")
                 self.nav_bar.address_bar.setEnabled(False)
 
     def start_video_download(self):
