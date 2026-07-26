@@ -147,8 +147,11 @@ class ToolsSidebar(QWidget):
         # Cyber & Pentesting Buttons
         self.proxy_btn = QPushButton("🔌 Proxy: OFF (Burp/ZAP)")
         self.proxy_btn.setStyleSheet("background-color: #2e1065; border: 1px solid #a855f7; color: #f3e8ff;")
+        self.repeater_btn = QPushButton("⚡ Request Repeater")
         self.cookie_manager_btn = QPushButton("🍪 Cookie & Session Manager")
         self.encoder_btn = QPushButton("🔐 Encoder / Decoder")
+        self.tech_detector_btn = QPushButton("🔍 Tech & WAF Detector")
+        self.vuln_fuzzer_btn = QPushButton("🎯 Parameter Fuzzer")
 
         # AI & Productivity Buttons
         self.ai_hub_btn = QPushButton("🤖 ALL AI Hub")
@@ -178,8 +181,11 @@ class ToolsSidebar(QWidget):
         
         layout.addWidget(self.title_label)
         layout.addWidget(self.proxy_btn)
+        layout.addWidget(self.repeater_btn)
         layout.addWidget(self.cookie_manager_btn)
         layout.addWidget(self.encoder_btn)
+        layout.addWidget(self.tech_detector_btn)
+        layout.addWidget(self.vuln_fuzzer_btn)
         layout.addWidget(self.ai_hub_btn)
         layout.addWidget(self.shortcuts_btn)
         layout.addWidget(self.adblock_btn)

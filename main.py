@@ -24,6 +24,9 @@ from shortcut_manager import ShortcutManagerWidget, DEFAULT_SHORTCUTS
 from proxy_manager import ProxyManager, ProxyConfigDialog
 from cookie_manager import CookieManagerWidget
 from encoder_decoder import EncoderDecoderWidget
+from request_repeater import RequestRepeaterWidget
+from tech_detector import TechDetectorWidget
+from vuln_fuzzer import VulnFuzzerWidget
 
 
 class TwinBrowser(QMainWindow):
@@ -75,8 +78,11 @@ class TwinBrowser(QMainWindow):
 
         # Connect Sidebar Tools Action Buttons
         self.sidebar.proxy_btn.clicked.connect(self.toggle_proxy)
+        self.sidebar.repeater_btn.clicked.connect(self.open_request_repeater)
         self.sidebar.cookie_manager_btn.clicked.connect(self.open_cookie_manager)
         self.sidebar.encoder_btn.clicked.connect(self.open_encoder_decoder)
+        self.sidebar.tech_detector_btn.clicked.connect(self.open_tech_detector)
+        self.sidebar.vuln_fuzzer_btn.clicked.connect(self.open_vuln_fuzzer)
         self.sidebar.ai_hub_btn.clicked.connect(self.open_ai_hub)
         self.sidebar.shortcuts_btn.clicked.connect(self.open_shortcut_manager)
         self.sidebar.adblock_btn.clicked.connect(self.toggle_adblocker)
@@ -237,6 +243,24 @@ class TwinBrowser(QMainWindow):
     def open_encoder_decoder(self):
         self.encoder_view = EncoderDecoderWidget()
         self.encoder_view.show()
+
+    def open_request_repeater(self):
+        self.repeater_view = RequestRepeaterWidget(main_window=self)
+        current_url = self.nav_bar.address_bar.text().strip()
+        self.repeater_view.set_target_url(current_url)
+        self.repeater_view.show()
+
+    def open_tech_detector(self):
+        self.tech_view = TechDetectorWidget(main_window=self)
+        current_url = self.nav_bar.address_bar.text().strip()
+        self.tech_view.set_target_url(current_url)
+        self.tech_view.show()
+
+    def open_vuln_fuzzer(self):
+        self.fuzzer_view = VulnFuzzerWidget(main_window=self)
+        current_url = self.nav_bar.address_bar.text().strip()
+        self.fuzzer_view.set_target_url(current_url)
+        self.fuzzer_view.show()
 
     def open_ai_hub(self):
         self.ai_hub_view = AIHubWidget(main_window=self)
