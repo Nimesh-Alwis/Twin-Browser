@@ -2,6 +2,7 @@ import os
 import json
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QTableWidget, QTableWidgetItem, 
                              QPushButton, QLabel, QLineEdit, QMessageBox, QHeaderView)
+from PyQt6.QtCore import Qt
 from path_utils import get_data_path
 
 SHORTCUTS_FILE = get_data_path("user_shortcuts.json")
