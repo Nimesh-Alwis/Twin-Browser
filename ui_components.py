@@ -144,6 +144,12 @@ class ToolsSidebar(QWidget):
         self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
         self.theme_btn = QPushButton("🎨 Customize Theme")
         
+        # Cyber & Pentesting Buttons
+        self.proxy_btn = QPushButton("🔌 Proxy: OFF (Burp/ZAP)")
+        self.proxy_btn.setStyleSheet("background-color: #2e1065; border: 1px solid #a855f7; color: #f3e8ff;")
+        self.cookie_manager_btn = QPushButton("🍪 Cookie & Session Manager")
+        self.encoder_btn = QPushButton("🔐 Encoder / Decoder")
+
         # AI & Productivity Buttons
         self.ai_hub_btn = QPushButton("🤖 ALL AI Hub")
         self.ai_hub_btn.setStyleSheet("background-color: #7e22ce; color: #ffffff; font-weight: bold; border: 1.5px solid #c084fc;")
@@ -171,6 +177,9 @@ class ToolsSidebar(QWidget):
         layout.setSpacing(8)
         
         layout.addWidget(self.title_label)
+        layout.addWidget(self.proxy_btn)
+        layout.addWidget(self.cookie_manager_btn)
+        layout.addWidget(self.encoder_btn)
         layout.addWidget(self.ai_hub_btn)
         layout.addWidget(self.shortcuts_btn)
         layout.addWidget(self.adblock_btn)

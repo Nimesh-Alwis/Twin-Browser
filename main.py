@@ -21,6 +21,9 @@ from split_screen import SplitScreenWidget
 from script_injector import ScriptInjectorWidget
 from ai_hub import AIHubWidget
 from shortcut_manager import ShortcutManagerWidget, DEFAULT_SHORTCUTS
+from proxy_manager import ProxyManager, ProxyConfigDialog
+from cookie_manager import CookieManagerWidget
+from encoder_decoder import EncoderDecoderWidget
 
 
 class TwinBrowser(QMainWindow):
@@ -38,6 +41,7 @@ class TwinBrowser(QMainWindow):
         self.adblock_interceptor = AdBlockerInterceptor(enabled=True)
         self.download_manager = DownloadManagerWidget()
         self.shortcut_manager_widget = ShortcutManagerWidget(main_window=self)
+        self.proxy_manager = ProxyManager(host="127.0.0.1", port=8080)
         self.active_shortcuts = []
 
         # Left Collapsible Sidebar
@@ -70,6 +74,9 @@ class TwinBrowser(QMainWindow):
         self.nav_bar.home_btn.clicked.connect(self.go_home)
 
         # Connect Sidebar Tools Action Buttons
+        self.sidebar.proxy_btn.clicked.connect(self.toggle_proxy)
+        self.sidebar.cookie_manager_btn.clicked.connect(self.open_cookie_manager)
+        self.sidebar.encoder_btn.clicked.connect(self.open_encoder_decoder)
         self.sidebar.ai_hub_btn.clicked.connect(self.open_ai_hub)
         self.sidebar.shortcuts_btn.clicked.connect(self.open_shortcut_manager)
         self.sidebar.adblock_btn.clicked.connect(self.toggle_adblocker)
@@ -212,6 +219,24 @@ class TwinBrowser(QMainWindow):
         engine = self.current_engine()
         if engine:
             engine.reload()
+
+    def toggle_proxy(self):
+        is_on = self.proxy_manager.toggle_proxy()
+        text = f"🔌 Proxy: ON ({self.proxy_manager.host}:{self.proxy_manager.port})" if is_on else "🔌 Proxy: OFF (Burp/ZAP)"
+        style = "background-color: #166534; border: 1.5px solid #22c55e; color: #ffffff;" if is_on else "background-color: #2e1065; border: 1px solid #a855f7; color: #f3e8ff;"
+        self.sidebar.proxy_btn.setText(text)
+        self.sidebar.proxy_btn.setStyleSheet(style)
+        status_msg = f"Application Proxy Enabled -> {self.proxy_manager.host}:{self.proxy_manager.port}" if is_on else "Application Proxy Disabled."
+        QMessageBox.information(self, "Proxy Switcher", status_msg)
+
+    def open_cookie_manager(self):
+        self.cookie_view = CookieManagerWidget(main_window=self)
+        self.cookie_view.load_cookies()
+        self.cookie_view.show()
+
+    def open_encoder_decoder(self):
+        self.encoder_view = EncoderDecoderWidget()
+        self.encoder_view.show()
 
     def open_ai_hub(self):
         self.ai_hub_view = AIHubWidget(main_window=self)
