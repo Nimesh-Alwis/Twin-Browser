@@ -1,5 +1,7 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QLabel
 
+from path_utils import get_data_path
+
 class BookmarkManager(QWidget):
     def __init__(self, browser_window):
         super().__init__()
@@ -54,7 +56,7 @@ class BookmarkManager(QWidget):
 
     def load_bookmarks(self):
         try:
-            with open("bookmarks.txt", "r") as f:
+            with open(get_data_path("bookmarks.txt"), "r") as f:
                 for line in f:
                     self.list_widget.addItem(line.strip())
         except FileNotFoundError:

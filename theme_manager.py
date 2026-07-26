@@ -5,8 +5,9 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
                              QLabel, QComboBox, QFileDialog, QColorDialog, QMessageBox, QApplication)
 from PyQt6.QtCore import pyqtSignal, Qt
 from PyQt6.QtGui import QColor
+from path_utils import get_data_path
 
-CONFIG_FILE = "theme_config.json"
+CONFIG_FILE = get_data_path("theme_config.json")
 
 PRESETS = {
     "Vivaldi Sunset (Default)": {
@@ -335,9 +336,10 @@ class ThemeDialog(QWidget):
             # Copy wallpaper to workspace for reliable loading
             ext = os.path.splitext(file_path)[1]
             dest_name = f"custom_wallpaper{ext}"
+            dest_path = get_data_path(dest_name)
             try:
-                shutil.copy(file_path, dest_name)
-                self.current_config["wallpaper"] = dest_name
+                shutil.copy(file_path, dest_path)
+                self.current_config["wallpaper"] = dest_path
                 self.wp_path_label.setText(f"Current Local Wallpaper: {os.path.basename(file_path)}")
                 QMessageBox.information(self, "Wallpaper Updated", f"Selected local wallpaper: {os.path.basename(file_path)}")
             except Exception as e:

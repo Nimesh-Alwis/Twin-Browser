@@ -5,3 +5,9 @@ history_log.txt
 bookmarks.txt
 special_notes.txt
 downloads/
+build/
+dist/
+installer_dist/
+*.exe
+*.lnk
+*.log

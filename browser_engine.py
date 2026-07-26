@@ -2,6 +2,8 @@ import os
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtCore import QUrl, pyqtSignal
 
+from path_utils import get_resource_path
+
 class TwinEngine(QWebEngineView):
     traffic_signal = pyqtSignal(str, str, str) 
 
@@ -9,7 +11,7 @@ class TwinEngine(QWebEngineView):
         super().__init__()
         self.main_window = main_window
         self.default_ua = self.page().profile().httpUserAgent()
-        self.home_file_path = os.path.abspath("homepage.html")
+        self.home_file_path = get_resource_path("homepage.html")
         self.load_home()
         
         self.urlChanged.connect(self.on_url_changed)

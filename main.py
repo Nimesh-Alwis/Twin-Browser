@@ -1,6 +1,9 @@
 import sys
+import os
 from PyQt6.QtWidgets import (QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, 
                              QMessageBox, QProgressBar, QLabel, QTabWidget, QPushButton)
+from PyQt6.QtGui import QIcon
+from path_utils import get_data_path, get_resource_path
 from browser_engine import TwinEngine
 from ui_components import NavigationBar, ToolsSidebar
 from security_manager import SecurityManager
@@ -171,6 +174,10 @@ QScrollBar::handle:vertical:hover {
 class TwinBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("TwinBrowser")
+        icon_path = get_resource_path("twin.ico")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
 
         self.security = SecurityManager()
         self.scanner = SiteScanner()
@@ -338,7 +345,7 @@ class TwinBrowser(QMainWindow):
     def add_bookmark(self):
         url = self.nav_bar.address_bar.text()
         if url and url != "twin://startpage":
-            with open("bookmarks.txt", "a") as f:
+            with open(get_data_path("bookmarks.txt"), "a") as f:
                 f.write(url + "\n")
             QMessageBox.information(self, "Success", "Page Bookmarked!")
 

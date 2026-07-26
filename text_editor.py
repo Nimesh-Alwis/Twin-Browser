@@ -1,5 +1,6 @@
 import os
 from PyQt6.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QHBoxLayout, QPushButton, QListWidget, QLabel, QFileDialog
+from path_utils import get_data_path
 
 class PayloadNotebook(QWidget):
     def __init__(self):
@@ -98,16 +99,18 @@ class PayloadNotebook(QWidget):
         """ ලියන දේ එසැණින් special_notes.txt ගොනුවට ලියයි """
         content = self.text_area.toPlainText()
         try:
-            with open("special_notes.txt", "w", encoding="utf-8") as f:
+            notes_file = get_data_path("special_notes.txt")
+            with open(notes_file, "w", encoding="utf-8") as f:
                 f.write(content)
         except Exception as e:
             print(f"Auto-save error: {e}")
 
     def load_notes(self):
         """ කලින් සේව් කළ නෝට්ස් තිබේ නම් ඒවා නැවත පෙන්නුම් කරයි """
-        if os.path.exists("special_notes.txt"):
+        notes_file = get_data_path("special_notes.txt")
+        if os.path.exists(notes_file):
             try:
-                with open("special_notes.txt", "r", encoding="utf-8") as f:
+                with open(notes_file, "r", encoding="utf-8") as f:
                     self.text_area.setPlainText(f.read())
             except Exception as e:
                 print(f"Error loading notes: {e}")

@@ -1,6 +1,7 @@
 import yt_dlp
 import os
 from PyQt6.QtCore import QThread, pyqtSignal
+from path_utils import get_data_path
 
 class DownloadThread(QThread):
     # progress (%), speed (MB/s), සහ අවසන් පණිවිඩය සඳහා signals
@@ -28,8 +29,9 @@ class DownloadThread(QThread):
 
     def run(self):
         try:
-            if not os.path.exists("downloads"):
-                os.makedirs("downloads")
+            download_dir = get_data_path("downloads")
+            if not os.path.exists(download_dir):
+                os.makedirs(download_dir)
 
             # Quality එක අනුව format එක තීරණය කිරීම
             # 'bestvideo[height<=720]+bestaudio' වැනි format එකක් මෙහිදී භාවිතා වේ
@@ -37,7 +39,7 @@ class DownloadThread(QThread):
 
             ydl_opts = {
                 'format': format_str,
-                'outtmpl': 'downloads/%(title)s.%(ext)s',
+                'outtmpl': os.path.join(download_dir, '%(title)s.%(ext)s'),
                 'progress_hooks': [self.progress_hook],
                 'noplaylist': True,
             }

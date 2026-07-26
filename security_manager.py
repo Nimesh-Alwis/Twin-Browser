@@ -1,9 +1,10 @@
 from datetime import datetime
+from path_utils import get_data_path
 
 class SecurityManager:
     def __init__(self):
         self.blocked_sites = ["malware.com", "phishing-site.net"]
-        self.log_file = "history_log.txt"
+        self.log_file = get_data_path("history_log.txt")
 
     def is_url_safe(self, url):
         # මුලින්ම ලොග් එක සටහන් කරගමු
