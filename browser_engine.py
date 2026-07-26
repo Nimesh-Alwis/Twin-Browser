@@ -1,5 +1,6 @@
 import os
 from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineCore import QWebEnginePage, QWebEngineProfile
 from PyQt6.QtCore import QUrl, pyqtSignal
 
 from path_utils import get_resource_path
@@ -7,9 +8,17 @@ from path_utils import get_resource_path
 class TwinEngine(QWebEngineView):
     traffic_signal = pyqtSignal(str, str, str) 
 
-    def __init__(self, main_window=None):
+    def __init__(self, main_window=None, is_private=False):
         super().__init__()
         self.main_window = main_window
+        self.is_private = is_private
+
+        if self.is_private:
+            # Off-the-record profile for Incognito Mode (no cache, history, or cookies saved to disk)
+            self.private_profile = QWebEngineProfile(parent=self)
+            self.private_page = QWebEnginePage(self.private_profile, self)
+            self.setPage(self.private_page)
+
         self.default_ua = self.page().profile().httpUserAgent()
         self.home_file_path = get_resource_path("homepage.html")
         self.load_home()
@@ -17,10 +26,14 @@ class TwinEngine(QWebEngineView):
         self.urlChanged.connect(self.on_url_changed)
         self.loadFinished.connect(self.on_load_finished)
 
+    def set_interceptor(self, interceptor):
+        if interceptor:
+            self.page().profile().setUrlRequestInterceptor(interceptor)
+
     def createWindow(self, _type):
-        new_engine = TwinEngine(main_window=self.main_window)
+        new_engine = TwinEngine(main_window=self.main_window, is_private=self.is_private)
         if self.main_window:
-            self.main_window.add_tab_from_engine(new_engine)
+            self.main_window.add_tab_from_engine(new_engine, is_private=self.is_private)
         return new_engine
 
     def load_home(self):
@@ -46,11 +59,9 @@ class TwinEngine(QWebEngineView):
         self.setUrl(QUrl(url_text))
 
     def on_url_changed(self, url):
-        # URL එක load වෙන්න පටන් ගන්නා විට "GET" request එකක් ලෙස සලකමු
         self.traffic_signal.emit("GET", "Pending...", url.toString())
 
     def on_load_finished(self, success):
         status = "200 OK" if success else "Failed/Blocked"
         current_url = self.url().toString()
-        # Load එක ඉවර වුණාම status එක යාවත්කාලීන කරනවා
         self.traffic_signal.emit("GET", status, current_url)

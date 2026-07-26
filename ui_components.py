@@ -133,7 +133,7 @@ class ToolsSidebar(QWidget):
         """)
 
         # Title
-        self.title_label = QLabel("🛠️ Security Tools")
+        self.title_label = QLabel("🛠️ Security & Tools")
 
         # Tool Action Buttons
         self.scan_btn = QPushButton("🔍 Scan Site")
@@ -144,6 +144,13 @@ class ToolsSidebar(QWidget):
         self.view_bookmarks_btn = QPushButton("📂 View Bookmarks")
         self.theme_btn = QPushButton("🎨 Customize Theme")
         
+        # New Productivity Buttons
+        self.adblock_btn = QPushButton("🛡️ Ad-Blocker: ON")
+        self.split_view_btn = QPushButton("🖥️ Split-Screen View")
+        self.incognito_btn = QPushButton("🕵️ Incognito Tab")
+        self.script_injector_btn = QPushButton("⚡ Script Injector")
+        self.download_manager_btn = QPushButton("📦 Download Manager")
+
         self.media_label = QLabel("📥 Downloader")
         self.quality_selector = QComboBox()
         self.quality_selector.addItems(["Best", "1080p", "720p", "480p", "360p"])
@@ -156,9 +163,14 @@ class ToolsSidebar(QWidget):
         content_widget = QWidget()
         layout = QVBoxLayout()
         layout.setContentsMargins(10, 12, 10, 12)
-        layout.setSpacing(10)
+        layout.setSpacing(8)
         
         layout.addWidget(self.title_label)
+        layout.addWidget(self.adblock_btn)
+        layout.addWidget(self.split_view_btn)
+        layout.addWidget(self.incognito_btn)
+        layout.addWidget(self.script_injector_btn)
+        layout.addWidget(self.download_manager_btn)
         layout.addWidget(self.scan_btn)
         layout.addWidget(self.subdomain_btn)
         layout.addWidget(self.traffic_btn)
@@ -167,12 +179,12 @@ class ToolsSidebar(QWidget):
         layout.addWidget(self.view_bookmarks_btn)
         layout.addWidget(self.theme_btn)
         
-        layout.addSpacing(10)
+        layout.addSpacing(8)
         layout.addWidget(self.media_label)
         layout.addWidget(self.quality_selector)
         layout.addWidget(self.download_btn)
 
-        layout.addSpacing(10)
+        layout.addSpacing(8)
         layout.addWidget(self.game_label)
         layout.addWidget(self.game_btn)
         layout.addStretch()
